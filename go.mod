@@ -3,11 +3,13 @@ module github.com/jsattler/go-comdirect
 go 1.21
 
 require (
+	github.com/adrg/xdg v0.4.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/spf13/cobra v1.7.0
 	github.com/zalando/go-keyring v0.2.3
 	golang.org/x/term v0.12.0
 	golang.org/x/time v0.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/jsattler/go-comdirect/comdirect/state"
 	"github.com/jsattler/go-comdirect/pkg/comdirect"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -60,9 +61,20 @@ func getTransactionsSince(since string, client *comdirect.Client, accountID stri
 	ctx, cancel := contextWithTimeout()
 	defer cancel()
 
+	if sinceFlag == "last" {
+		var err error
+		since, err = state.GetLastSince(accountID)
+		if err != nil {
+			log.Fatalf("could not get last value since value: %s", err)
+		}
+		if sinceFlag == "" {
+			log.Fatal("before using the '--since last' flag you need to run it with a date first.")
+		}
+	}
+
 	s, err := time.Parse(dateLayout, since)
 	if err != nil {
-		log.Fatalf("Failed to parse date from command line: %s", err)
+		log.Fatalf("Failed to parse date from command line '--since' flag: %s", err)
 	}
 
 	page := 1
@@ -99,6 +111,11 @@ func getTransactionsSince(since string, client *comdirect.Client, accountID stri
 	if err != nil {
 		log.Fatalf("Error filtering transactions by date: %e", err)
 	}
+
+	// we should use yesterdays date otherwise we would miss transaction that are
+	// booked later that day when using`--since last` again
+	yesterday := time.Now().Add(-24 * time.Hour)
+	state.SetLastSince(accountID, yesterday.Format("2006-01-02"))
 	return transactions
 }
 
