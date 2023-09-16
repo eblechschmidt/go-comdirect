@@ -67,7 +67,7 @@ func getTransactionsSince(since string, client *comdirect.Client, accountID stri
 		if err != nil {
 			log.Fatalf("could not get last value since value: %s", err)
 		}
-		if sinceFlag == "" {
+		if since == "" {
 			log.Fatal("before using the '--since last' flag you need to run it with a date first.")
 		}
 	}
